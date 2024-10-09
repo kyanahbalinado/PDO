@@ -1,4 +1,4 @@
-<?php require_once 'dbconfig.php'; ?>
+   <?php require_once 'dbconfig.php'; ?>
 <!-- 
 The 'dbconfig.php' file is included using 'require_once' to establish a connection with the 
 database using the PDO instance created in that file. This ensures that the database 
@@ -16,39 +16,87 @@ an error in it, the script will stop executing.
 </head>
 <body>
     <?php
-    // Define a query to select all rows from the 'users' table
-    $query = "SELECT * FROM users"; 
-    
-    // Prepare the SQL query for execution using the PDO instance
+
+    $stmt = $pdo->prepare("SELECT * FROM users");
+    if($stmt->execute()){
+        echo"<pre>";
+        print_r($stmt->fetchAll());
+        echo"</pre>";
+    }
+   
+   ?>
+
+   
+
+   $stmt = $pdo->prepare("SELECT * FROM users");
+   if($stmt->execute()){
+        echo"<pre>";
+        print_r($stmt->fetch());
+        echo"</pre>";
+    }
+   
+   ?> 
+
+
+
+    $query = "INSERT INTO groups (GroupID, GroupName, CreatedBy) VALUES (?, ?, ?)";
     $stm = $pdo->prepare($query); 
+    $executeQuery = $stm->execute([17, "kyanahgroup", 'genean']); 
+    if ($executeQuery) {
+        echo "Query Successful!";
+    } else {
+        echo "Query Failed";
+    }
+    ?>
+
     
-    // Execute the prepared query and store the result in $executeQuery
+    $query = "DELETE FROM users WHERE UserID = 1;"; // Added semicolon here
+    $stm = $pdo->prepare($query);
+
+    // Execute the query without parameters
     $executeQuery = $stm->execute();
 
-    // Check if the query was successfully executed
+    // Check if the query execution was successful
     if ($executeQuery) {
-        // Fetch all the resulting rows from the executed query
-        $users = $stm->fetchAll(); 
+        echo "Deletion Successful!";
     } else {
-        // Display an error message if the query execution failed
+        echo "Query Failed";
+    }
+    ?>
+
+
+
+    $query = "UPDATE users SET Username = ? WHERE UserID = 1"; 
+    $executeQuery = $stm->execute(["kyanah"]);
+    if ($executeQuery) {
+        echo "Update Successful!"; 
+    } else {
         echo "Query Failed"; 
     }
     ?>
 
-    <!-- Create a table to display the user data -->
-    <table border="1"> <!-- Added border attribute for better visibility of the table structure -->
-    <tr>
-        <th>UserID</th> <!-- Table header for UserID -->
-        <th>Username</th> <!-- Table header for Username -->
-        <th>FirstName</th> <!-- Table header for FirstName -->
-    </tr> 
 
-    <!-- Loop through the $users array and create a new row for each user -->
+
+    $query = "SELECT * FROM users"; 
+    $stm = $pdo->prepare($query); 
+    $executeQuery = $stm->execute();
+    if ($executeQuery) {
+        $users = $stm->fetchAll(); 
+    } else {
+      echo "Query Failed"; 
+    }
+    ?>
+ <table border="1"> 
+    <tr>
+        <th>UserID</th> 
+        <th>Username</th>
+        <th>FirstName</th> 
+    </tr> 
     <?php foreach ($users as $row) { ?> 
     <tr>
-        <td><?php echo $row['UserID']; ?></td> <!-- Display the UserID of the current user -->
-        <td><?php echo $row['Username']; ?></td> <!-- Display the Username of the current user -->
-        <td><?php echo $row['FirstName']; ?></td> <!-- Display the FirstName of the current user -->
+        <td><?php echo $row['UserID']; ?></td> 
+        <td><?php echo $row['Username']; ?></td> 
+        <td><?php echo $row['FirstName']; ?></td> 
     </tr> 
     <?php } ?> 
     </table>
